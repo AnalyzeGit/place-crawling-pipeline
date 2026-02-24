@@ -3,8 +3,8 @@ from sqlalchemy import text
 def get_recent_hashes(engine, limit: int = 300) -> set:
     query = text("""
         SELECT review_hash
-        FROM review
-        ORDER BY crawled_at DESC
+        FROM raw.review
+        ORDER BY created_at DESC
         LIMIT :limit
     """)
 

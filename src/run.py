@@ -5,10 +5,12 @@ from browser.driver import create_driver
 from scroll.review_loader import load_all_reviews
 from navigation.review_tab import open_review_tab
 from utils.review_hash import generate_review_hash
+from db.connection import get_engine
 from db.review_select import get_recent_hashes
 from db.review_insert import upsert_reviews
 from review_parser.review_cards import get_review_cards
 from review_parser.designer import extract_designer_name
+from review_parser.reviewer_id import extract_reviewer_id
 from review_parser.review_text import extract_review_text
 from review_parser.review_keywords import extract_review_keywords
 from review_parser.visit_meta import extract_visit_meta
@@ -55,6 +57,10 @@ def main():
             designer=row["designer"],
         )
 
+        # 
+        if review_hash is None:
+            continue    
+
         # 중단 조건
         if review_hash in existing_hashes:
             print("기존 데이터 발견 → 중단")
@@ -66,6 +72,7 @@ def main():
 
     df = pd.DataFrame(rows)
     # df.to_csv('naver_place_2007321729.csv', index=False, encoding='utf-8-sig')
+
     # 데이터 적재 
     upsert_reviews(engine, df)
 
